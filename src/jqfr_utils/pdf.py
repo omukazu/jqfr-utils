@@ -84,7 +84,7 @@ class Page:
                             f.x0 - 1 <= min_x0 and f.x1 + 1 >= max_x1 and f.y0 - 1 <= min_y0 and f.y1 + 1 >= max_y1
                             for f in self.frames
                         ),
-                        "break": max_x1 < self.width * 7 / 8
+                        "break": max_x1 < self.width * 7 / 8,
                     }
                 )
         if aggregated:
@@ -148,9 +148,7 @@ class Page:
     def to_text(self, include_table: bool = False) -> str:
         text = ""
         for prev_line, cur_line, next_line in zip(
-            self.lines[-1:] + self.lines[:-1],
-            self.lines,
-            self.lines[1:] + self.lines[:1]
+            self.lines[-1:] + self.lines[:-1], self.lines, self.lines[1:] + self.lines[:1]
         ):
             if include_table is True and cur_line["table"] is True:
                 text += "\n" * int(prev_line["table"] is False)  # "<table>"

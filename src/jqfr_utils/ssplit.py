@@ -1,6 +1,5 @@
 import re
 
-
 CONVERTER = {
     "（": "$FULLWIDTH_LEFT_PARENTHESIS",
     "(": "$LEFT_PARENTHESIS",
