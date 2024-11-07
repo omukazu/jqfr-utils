@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "jqfr-utils"
+version = "0.1.0"
+description = "Python Virtual Environment for Utils to Scrap Japanese Quarterly Financial Reports"
+authors = ["Kazumasa Omura <omura@nlp.ist.i.kyoto-u.ac.jp>"]
+readme = "README.md"
+
+packages = [
+    { include = "jqfr_utils", from = "src" }
+]
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.10"
+pdfminer-six = "20240706"
+reportlab = ">=4.2.5,<5.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
