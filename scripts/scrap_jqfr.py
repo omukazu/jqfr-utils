@@ -38,7 +38,8 @@ def dump_pdf(pages: list[Page], out_file: Path) -> None:
     register_fonts(Path("./assets/fonts"))
 
     # char_index = 0
-    # sentences = split_text_into_sentences(get_text(pages))
+    # text = "".join(p.to_text() for p in pages)
+    # sentences = split_text_into_sentences(text)
     # char_index2sent_index = [i for i, s in enumerate(sentences) for _ in s]
 
     canvas = Canvas(out_file.name)
@@ -75,7 +76,7 @@ def main():
     args = parser.parse_args()
 
     pages = extract_pages(args.IN_FILE)
-    text = "".join(p.to_text(include_table=True) for p in pages)
+    text = "".join(p.to_text(include_table=True, include_line_break=True) for p in pages)
     sentences = split_text_into_sentences(text)
     print(json.dumps(sentences, ensure_ascii=False, indent=2))
     if args.debug:

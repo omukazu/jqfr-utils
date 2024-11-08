@@ -71,7 +71,7 @@ class Page:
                     lt_char = x2lt_char.pop(prev)
                 x2lt_char[x0] = lt_char
                 prev = x0
-            lt_chars = [*x2lt_char.values()]
+            lt_chars = [lc for lc in x2lt_char.values() if lc.get_text().strip()]
             if len(lt_chars) >= 1:
                 min_x0 = round(min(lc.x0 for lc in lt_chars))
                 min_y0 = round(min(lc.y0 for lc in lt_chars))
