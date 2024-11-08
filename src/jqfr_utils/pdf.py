@@ -84,11 +84,11 @@ class Page:
                             f.x0 - 1 <= min_x0 and f.x1 + 1 >= max_x1 and f.y0 - 1 <= min_y0 and f.y1 + 1 >= max_y1
                             for f in self.frames
                         ),
-                        "break": max_x1 < self.width * 7 / 8,
+                        "line_break": max_x1 < self.width * 7 / 8,
                     }
                 )
         if aggregated:
-            aggregated[-1]["break"] = False  # ページ末尾の行は右端に余白があっても改行しない
+            aggregated[-1]["line_break"] = False  # ページ末尾の行は右端に余白があっても改行しない
         return aggregated
 
     @staticmethod
@@ -145,7 +145,7 @@ class Page:
             frames.append(Rect(x0=min(x0s), y0=min(y0s), x1=max(x1s), y1=max(y1s)))
         return frames
 
-    def to_text(self, include_table: bool = False) -> str:
+    def to_text(self, include_table: bool = False, include_line_break: bool = False) -> str:
         text = ""
         for prev_line, cur_line, next_line in zip(
             self.lines[-1:] + self.lines[:-1], self.lines, self.lines[1:] + self.lines[:1]
@@ -164,7 +164,7 @@ class Page:
                 text += "\n" * int(next_line["table"] is False)  # "</table>"
             else:
                 text += "".join(lc.get_text().strip() for lc in cur_line["lt_chars"])
-                text += "\u3000" * int(cur_line["break"])
+                text += "\u3000" * int(cur_line["line_break"]) * include_line_break
         return text
 
 
