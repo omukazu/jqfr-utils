@@ -85,10 +85,16 @@ class Page:
                             for f in self.frames
                         ),
                         "line_break": max_x1 < self.width * 7 / 8,
+                        "header": max_y1 >= self.height * 0.95,
+                        "footer": min_y0 <= self.height * 0.05,
                     }
                 )
         if aggregated:
             aggregated[-1]["line_break"] = False  # ページ末尾の行は右端に余白があっても改行しない
+            for line in aggregated[1:-1]:
+                # ページ先頭/末尾の行のみヘッダー/フッターとして扱う
+                line["header"] = False
+                line["footer"] = False
         return aggregated
 
     @staticmethod
@@ -145,23 +151,33 @@ class Page:
             frames.append(Rect(x0=min(x0s), y0=min(y0s), x1=max(x1s), y1=max(y1s)))
         return frames
 
-    def to_text(self, include_table: bool = False, include_line_break: bool = False) -> str:
+    def to_text(
+        self,
+        include_table: bool = False,
+        include_line_break: bool = False,
+        include_header_and_footer: bool = False,
+    ) -> str:
         text = ""
         for prev_line, cur_line, next_line in zip(
             self.lines[-1:] + self.lines[:-1], self.lines, self.lines[1:] + self.lines[:1]
         ):
-            if include_table is True and cur_line["table"] is True:
-                text += "\n" * int(prev_line["table"] is False)  # "<table>"
-                tr = ""  # "<tr>"
-                for cur_lt_char, next_lt_char in zip(
-                    cur_line["lt_chars"], cur_line["lt_chars"][1:] + cur_line["lt_chars"][:1]
-                ):
-                    tr += cur_lt_char.get_text().strip()
-                    # 2文字以上離れていたら別カラムとみなす
-                    tr += "\t" * int(next_lt_char.x0 - cur_lt_char.x1 >= cur_lt_char.width * 2.125)
-                tr += "\n"  # "</tr>"
-                text += tr
-                text += "\n" * int(next_line["table"] is False)  # "</table>"
+            if cur_line["table"] is True:
+                if include_table is True:
+                    text += "\n" * int(prev_line["table"] is False)  # "<table>"
+                    tr = ""  # "<tr>"
+                    for cur_lt_char, next_lt_char in zip(
+                        cur_line["lt_chars"], cur_line["lt_chars"][1:] + cur_line["lt_chars"][:1]
+                    ):
+                        tr += cur_lt_char.get_text().strip()
+                        # 2文字以上離れていたら別カラムとみなす
+                        tr += "\t" * int(next_lt_char.x0 - cur_lt_char.x1 >= cur_lt_char.width * 2.125)
+                    tr += "\n"  # "</tr>"
+                    text += tr
+                    text += "\n" * int(next_line["table"] is False)  # "</table>"
+            elif cur_line["header"] is True or cur_line["footer"] is True:
+                if include_header_and_footer is True:
+                    text += "".join(lc.get_text().strip() for lc in cur_line["lt_chars"])
+                    text += "\u3000" * int(cur_line["line_break"]) * include_line_break
             else:
                 text += "".join(lc.get_text().strip() for lc in cur_line["lt_chars"])
                 text += "\u3000" * int(cur_line["line_break"]) * include_line_break
