@@ -51,7 +51,7 @@ class Page:
         y2lt_text_lines, prev = defaultdict(list), 1000000
         for lt_text_line in sorted(lt_text_lines, key=lambda x: -x.y0):
             y = round(-lt_text_line.y0)
-            if abs(prev - y) <= lt_text_line.height / 8:  # y軸上でoverlapしていたらまとめる
+            if abs(prev - y) <= lt_text_line.height / 4:  # y軸上でoverlapしていたらまとめる
                 popped = y2lt_text_lines.pop(prev)
                 y2lt_text_lines[y].extend(popped)
             y2lt_text_lines[y].append(lt_text_line)
@@ -67,11 +67,11 @@ class Page:
             x2lt_char, prev = {}, 10000
             for lt_char in sorted(lt_chars, key=lambda x: x.x0):
                 x0 = round(lt_char.x0)
-                if abs(prev - x0) <= lt_char.width / 8:  # x軸上でoverlapしていたら無視
+                if abs(prev - x0) <= lt_char.width / 4:  # x軸上でoverlapしていたら無視
                     lt_char = x2lt_char.pop(prev)
                 x2lt_char[x0] = lt_char
                 prev = x0
-            lt_chars = [lc for lc in x2lt_char.values() if lc.get_text().strip()]
+            lt_chars = [*x2lt_char.values()]
             if len(lt_chars) >= 1:
                 min_x0 = round(min(lc.x0 for lc in lt_chars))
                 min_y0 = round(min(lc.y0 for lc in lt_chars))
@@ -81,10 +81,10 @@ class Page:
                     {
                         "lt_chars": lt_chars,
                         "table": any(
-                            f.x0 - 1 <= min_x0 and f.x1 + 1 >= max_x1 and f.y0 - 1 <= min_y0 and f.y1 + 1 >= max_y1
+                            f.x0 - 1 <= min_x0 and f.y0 - 1 <= min_y0 and f.x1 + 1 >= max_x1 and f.y1 + 1 >= max_y1
                             for f in self.frames
                         ),
-                        "line_break": max_x1 < self.width * 7 / 8,
+                        "line_break": max_x1 < self.width * 5 / 6,
                         "header": max_y1 >= self.height * 0.95,
                         "footer": min_y0 <= self.height * 0.05,
                     }
@@ -110,7 +110,7 @@ class Page:
         if isinstance(layout, LTCurve):
             try:
                 rect = self.curve2rect(layout)
-                if rect.x1 - rect.x0 < self.width * 7 / 8 or rect.y1 - rect.y0 < self.height * 7 / 8:
+                if rect.x1 - rect.x0 < self.width * 5 / 6 or rect.y1 - rect.y0 < self.height * 5 / 6:
                     return [rect]
             except IndexError:
                 pass
@@ -177,10 +177,10 @@ class Page:
             elif cur_line["header"] is True or cur_line["footer"] is True:
                 if include_header_and_footer is True:
                     text += "".join(lc.get_text().strip() for lc in cur_line["lt_chars"])
-                    text += "\u3000" * int(cur_line["line_break"]) * include_line_break
+                    text += "\u3000" * cur_line["line_break"] * include_line_break
             else:
                 text += "".join(lc.get_text().strip() for lc in cur_line["lt_chars"])
-                text += "\u3000" * int(cur_line["line_break"]) * include_line_break
+                text += "\u3000" * cur_line["line_break"] * include_line_break
         return text
 
 
