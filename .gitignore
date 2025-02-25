@@ -1,1 +1,10 @@
+# local
 assets/
+
+# byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ruff cache directory
+.ruff_cache/

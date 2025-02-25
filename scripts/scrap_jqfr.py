@@ -9,7 +9,7 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen.canvas import Canvas
 
 from jqfr_utils.pdf import Page, extract_pages
-from jqfr_utils.ssplit import split_text_into_sentences
+from jqfr_utils.sentence_segmentation import segment_text_into_sentences
 
 
 def register_fonts(out_dir: Path) -> None:
@@ -77,7 +77,7 @@ def main():
 
     pages = extract_pages(args.IN_FILE)
     text = "".join(p.to_text(include_table=True, include_line_break=True) for p in pages)
-    sentences = split_text_into_sentences(text)
+    sentences = segment_text_into_sentences(text)
     print(json.dumps(sentences, ensure_ascii=False, indent=2))
     if args.debug:
         dump_pdf(pages, args.debug)

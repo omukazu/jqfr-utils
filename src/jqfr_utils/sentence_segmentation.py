@@ -13,7 +13,7 @@ CONVERTER = {
 INVERTER = {v: k for k, v in CONVERTER.items()}
 
 
-def split_text_into_sentences(text: str) -> list[str]:
+def segment_text_into_sentences(text: str) -> list[str]:
     balanced = _balance(text)
 
     sentences = []
