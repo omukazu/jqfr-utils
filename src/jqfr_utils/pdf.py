@@ -170,17 +170,17 @@ class Page:
                     ):
                         tr += cur_lt_char.get_text().strip()
                         # 2文字以上離れていたら別カラムとみなす
-                        tr += "\t" * int(next_lt_char.x0 - cur_lt_char.x1 >= cur_lt_char.width * 2.125)
+                        tr += "  " * int(next_lt_char.x0 - cur_lt_char.x1 >= cur_lt_char.width * 2.125)
                     tr += "\n"  # "</tr>"
                     text += tr
                     text += "\n" * int(next_line["table"] is False)  # "</table>"
             elif cur_line["header"] is True or cur_line["footer"] is True:
                 if include_header_and_footer is True:
                     text += "".join(lc.get_text().strip() for lc in cur_line["lt_chars"])
-                    text += "\u3000" * cur_line["line_break"] * include_line_break
+                    text += "  " * cur_line["line_break"] * include_line_break
             else:
                 text += "".join(lc.get_text().strip() for lc in cur_line["lt_chars"])
-                text += "\u3000" * cur_line["line_break"] * include_line_break
+                text += "  " * cur_line["line_break"] * include_line_break
         return text
 
 
